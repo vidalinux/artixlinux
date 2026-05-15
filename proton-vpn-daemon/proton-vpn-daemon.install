@@ -1,0 +1,10 @@
+post_install() {
+  dinitctl enable proton-vpn
+}
+post_upgrade() {
+  dinitctl restart proton-vpn
+}
+
+pre_remove() {
+  dinitctl disable proton-vpn
+}

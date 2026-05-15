@@ -1,0 +1,57 @@
+# Maintainer: Peter Jung <ptr1337@archlinux.org>
+
+pkgname=proton-vpn-daemon
+pkgver=0.13.7
+pkgrel=1
+pkgdesc="Daemons for Proton VPN Linux client (split tunneling service)"
+arch=('any')
+url="https://github.com/ProtonVPN/proton-vpn-daemon"
+license=(GPL-3.0-only)
+depends=(
+  python
+  python-dbus-fast
+  python-psutil
+  python-bcc
+  python-packaging
+  python-proton-vpn-api-core
+  wireguard-tools
+)
+makedepends=(
+  git
+  python-build
+  python-installer
+  python-setuptools
+  python-wheel
+)
+install=proton-vpn-daemon.install
+
+source=(
+  "$pkgname::git+https://github.com/ProtonVPN/${pkgname}.git#tag=v${pkgver}"
+  "dbus.conf"
+  "proton-vpn"
+  "split-tunneling.patch"
+)
+sha256sums=('ee202d848062db6d4910d724fb65554205b5e2988d65e7d9ec6598e5b4d851db'
+            '87ed0dcd92d9ec1f90f1012013acfbb7a78b19521fd89fb8857f97f39941943c'
+            '7717d1b94daa4c27040e1dc065f4983a67a5db605d20c6ee8ec0c29f99356a7b'
+            '8d3107bd22fb7267e07ad4faa3a50054a77833de6d2da582262141a6e48aea47')
+
+prepare() {
+  cd $pkgname
+  patch -Np1 < ../split-tunneling.patch
+}
+build() {
+  cd "$pkgname"
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  cd "$pkgname"
+  # Wheel filename uses underscores instead of dashes.
+  python -m installer --destdir="$pkgdir" dist/${pkgname//-/_}-*.whl
+
+  install -Dm644 "$srcdir/proton-vpn" \
+    "$pkgdir/etc/dinit/proton-vpn"
+  install -Dm644 "$srcdir/dbus.conf" \
+    "$pkgdir/usr/share/dbus-1/system.d/me.proton.vpn.conf"
+}

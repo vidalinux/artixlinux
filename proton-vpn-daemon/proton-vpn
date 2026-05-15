@@ -1,0 +1,7 @@
+type = process
+command = /usr/bin/python3 -m proton.vpn.daemon
+restart = true
+depends-on = dbus
+depends-on = network.target
+logfile = /var/log/dinit/proton-vpn.log
+run-as = root
