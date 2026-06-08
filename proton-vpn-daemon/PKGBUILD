@@ -51,7 +51,7 @@ package() {
   python -m installer --destdir="$pkgdir" dist/${pkgname//-/_}-*.whl
 
   install -Dm644 "$srcdir/proton-vpn" \
-    "$pkgdir/etc/dinit/proton-vpn"
+    "$pkgdir/etc/dinit.d/proton-vpn"
   install -Dm644 "$srcdir/dbus.conf" \
     "$pkgdir/usr/share/dbus-1/system.d/me.proton.vpn.conf"
 }
